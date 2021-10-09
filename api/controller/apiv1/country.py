@@ -10,7 +10,7 @@ class CountryController:
 
     def get_countries():
         if request.is_json is False:
-            return jsonify(status=400, code=101)
+            return jsonify(status=405, code=101)
         countries_schema = CountrySchema(many=True)
         try:
             countries = Country.query.all()
@@ -22,7 +22,7 @@ class CountryController:
 
     def get_country(country_id):
         if request.is_json is False:
-            return jsonify(status=400, code=101)
+            return jsonify(status=405, code=101)
         country_schema = CountrySchema()
         try:
             country = Country.query.get(country_id)
@@ -36,7 +36,7 @@ class CountryController:
 
     def create_country():
         if request.is_json is False:
-            return jsonify(status=400, code=101)
+            return jsonify(status=405, code=101)
         country_schema = CountrySchema()
         try:
             data = country_schema.load(request.get_json())
