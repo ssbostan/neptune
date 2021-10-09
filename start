@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Copyright 2021, Saeid Bostandoust <ssbostan@linuxmail.org>
+
+function get_date {
+    date "+%Y-%m-%d %H:%M:%S"
+}
+
+echo "[$(get_date)] Welcome to Neptune API Service!"
+echo "[$(get_date)] Application is going to start..."
+echo "[$(get_date)] Tests may take a while, up to 150 seconds..."
+
+for _ in {1..10}; do
+    flask app test &> /dev/null
+    rc=$?
+    if [[ $rc -eq 0 ]]; then
+        break
+    fi
+    sleep 15
+done
+
+if [ $rc -ne 0 ]; then
+    echo "[$(get_date)] Testing backing services failed!"
+    exit 1
+fi
+
+echo "[$(get_date)] Testing backing services completed successfully."
+
+flask db upgrade
+
+echo "[$(get_date)] Ready to start the application..."
+
+gunicorn -b 0:8080 -w 4 \
+    --no-sendfile \
+    --access-logfile - \
+    --error-logfile - \
+    "api:create_app()"
