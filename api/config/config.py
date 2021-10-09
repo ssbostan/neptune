@@ -2,7 +2,7 @@ from os import environ
 
 class Config:
 
-    ENV = environ.get("NEPTUNE_API_ENV", "development")
+    ENV = environ.get("NEPTUNE_API_ENV", "production")
 
     DEBUG = bool(environ.get("NEPTUNE_API_DEBUG", "0"))
 
