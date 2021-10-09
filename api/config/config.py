@@ -7,3 +7,7 @@ class Config:
     DEBUG = bool(environ.get("NEPTUNE_API_DEBUG", "0"))
 
     TESTING = bool(environ.get("NEPTUNE_API_TESTING", "0"))
+
+    JSONIFY_PRETTYPRINT_REGULAR = True
+
+    RESTFUL_JSON = { "indent": 2, "sort_keys": True }
