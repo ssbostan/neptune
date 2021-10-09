@@ -1,3 +1,5 @@
+from api.model import Country
+from api.schema.apiv1 import CountrySchema
 from api.util import jsonify
 
 class CountryController:
