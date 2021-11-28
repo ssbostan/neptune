@@ -4,9 +4,9 @@ class Config:
 
     ENV = environ.get("NEPTUNE_API_ENV", "production")
 
-    DEBUG = bool(environ.get("NEPTUNE_API_DEBUG", "0"))
+    DEBUG = bool(int(environ.get("NEPTUNE_API_DEBUG", "0")))
 
-    TESTING = bool(environ.get("NEPTUNE_API_TESTING", "0"))
+    TESTING = bool(int(environ.get("NEPTUNE_API_TESTING", "0")))
 
     JSONIFY_PRETTYPRINT_REGULAR = True
 
