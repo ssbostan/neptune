@@ -1,6 +1,6 @@
-FROM python:slim
+FROM python:3.10-slim-buster
 
-LABEL maintainer="Saeid Bostandoust <ssbostan@linuxmail.org>"
+LABEL maintainer="Saeid Bostandoust <ssbostan@yahoo.com>"
 
 EXPOSE 8080
 
