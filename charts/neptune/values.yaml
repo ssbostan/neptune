@@ -1,0 +1,41 @@
+neptune:
+  deployment:
+    replicas: 3
+
+  image:
+    repository: ssbostan/neptune
+    tag: latest
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  ingress:
+    enabled: true
+    host: neptune.20302040.xyz
+    annotations:
+    ingressClassName:
+
+  config:
+    env: production
+    debug: false
+    testing: false
+
+mysql:
+  image:
+    repository: mysql
+    tag: 8
+
+  persistentVolumeClaim:
+    accessMode: ReadWriteOnce
+    size: 20Gi
+
+  service:
+    type: ClusterIP
+    port: 3306
+
+  secret:
+    mysqlRootPassword: root
+    mysqlDatabase: neptune
+    mysqlUser: neptune
+    mysqlPassword: neptune

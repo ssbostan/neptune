@@ -1,0 +1,17 @@
+image:
+  repository: mysql
+  tag: "8"
+
+persistentVolumeClaim:
+  accessMode: ReadWriteOnce
+  size: 10Gi
+
+service:
+  type: ClusterIP
+  port: 3306
+
+secret:
+  mysqlRootPassword: root
+  mysqlDatabase: neptune
+  mysqlUser: neptune
+  mysqlPassword: neptune

@@ -5,6 +5,7 @@ docs/
 Dockerfile
 *.md
 LICENSE
+charts/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

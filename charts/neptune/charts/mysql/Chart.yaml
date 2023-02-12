@@ -1,0 +1,6 @@
+apiVersion: v2
+name: mysql
+description: Helm chart to deploy Mysql for Neptune API service
+type: application
+version: 1.0.0
+appVersion: 8

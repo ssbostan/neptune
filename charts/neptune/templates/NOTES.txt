@@ -1,0 +1,3 @@
+Neptune API is deployed successfully.
+Ingress endpoint: http://{{ .Values.neptune.ingress.host }}
+Service endpoint: http://{{ include "name" . }}:{{ .Values.neptune.service.port }}

@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "name" . }}
+  labels:
+    {{- include "labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.neptune.deployment.replicas }}
+  selector:
+    matchLabels:
+      {{- include "labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: neptune
+          image: {{ .Values.neptune.image.repository }}:{{ .Values.neptune.image.tag }}
+          ports:
+            - name: http
+              containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: {{ include "name" . }}-config
+                optional: true
+            - secretRef:
+                name: {{ include "name" . }}-secret
+          livenessProbe:
+            initialDelaySeconds: 1
+            periodSeconds: 3
+            exec:
+              command: ["kill", "-0", "1"]
+          readinessProbe:
+            initialDelaySeconds: 1
+            periodSeconds: 3
+            tcpSocket:
+              port: 8080

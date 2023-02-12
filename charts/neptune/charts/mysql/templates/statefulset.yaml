@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "name" . }}
+  labels:
+    {{- include "labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "labels" . | nindent 6 }}
+  serviceName: {{ include "name" . }}
+  template:
+    metadata:
+      labels:
+        {{- include "labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: mysql
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          envFrom:
+            - secretRef:
+                name: {{ include "name" . }}-secret
+          volumeMounts:
+            - name: {{ include "name" . }}-data
+              mountPath: /var/lib/mysql
+          livenessProbe:
+            initialDelaySeconds: 1
+            periodSeconds: 3
+            exec:
+              command: ["ls", "/proc/1"]
+          readinessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            exec:
+              command:
+                - bash
+                - -c
+                - >-
+                  mysql -h localhost
+                  -u${MYSQL_USER} -p${MYSQL_PASSWORD}
+                  -e "select version();"
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "name" . }}-data
+      spec:
+        accessModes:
+          - {{ .Values.persistentVolumeClaim.accessMode }}
+        resources:
+          requests:
+            storage: {{ .Values.persistentVolumeClaim.size }}
