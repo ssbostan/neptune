@@ -21,6 +21,9 @@ neptune:
     debug: false
     testing: false
 
+  sealedSecrets:
+    enabled: false
+
 mysql:
   image:
     repository: mysql
@@ -39,3 +42,6 @@ mysql:
     mysqlDatabase: neptune
     mysqlUser: neptune
     mysqlPassword: neptune
+
+  sealedSecrets:
+    enabled: false
