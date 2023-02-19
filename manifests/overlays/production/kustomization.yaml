@@ -1,0 +1,4 @@
+bases:
+  - ../../base
+resources:
+  - secret.yaml

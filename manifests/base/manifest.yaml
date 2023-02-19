@@ -1,0 +1,263 @@
+---
+# Source: neptune/templates/namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: neptune
+  labels:
+    app.kubernetes.io/name: neptune
+    app.kubernetes.io/part-of: neptune
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/created-by: ssbostan
+---
+# Source: neptune/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: neptune-neptune-config
+  namespace: neptune
+  labels:
+    app.kubernetes.io/name: neptune
+    app.kubernetes.io/part-of: neptune
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/created-by: ssbostan
+data:
+  NEPTUNE_API_ENV: production
+  NEPTUNE_API_DEBUG: "0"
+  NEPTUNE_API_TESTING: "0"
+---
+# Source: neptune/charts/mysql/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: neptune-mysql
+  namespace: neptune
+  labels:
+    app.kubernetes.io/name: mysql
+    app.kubernetes.io/part-of: neptune
+    app.kubernetes.io/version: "8"
+    app.kubernetes.io/created-by: ssbostan
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: mysql
+    app.kubernetes.io/part-of: neptune
+    app.kubernetes.io/version: "8"
+    app.kubernetes.io/created-by: ssbostan
+  ports:
+    - name: mysql
+      port: 3306
+      targetPort: 3306
+---
+# Source: neptune/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: neptune-neptune
+  namespace: neptune
+  labels:
+    app.kubernetes.io/name: neptune
+    app.kubernetes.io/part-of: neptune
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/created-by: ssbostan
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: neptune
+    app.kubernetes.io/part-of: neptune
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/created-by: ssbostan
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+---
+# Source: neptune/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: neptune-neptune
+  namespace: neptune
+  labels:
+    app.kubernetes.io/name: neptune
+    app.kubernetes.io/part-of: neptune
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/created-by: ssbostan
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: neptune
+      app.kubernetes.io/part-of: neptune
+      app.kubernetes.io/version: "1.0.0"
+      app.kubernetes.io/created-by: ssbostan
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: neptune
+        app.kubernetes.io/part-of: neptune
+        app.kubernetes.io/version: "1.0.0"
+        app.kubernetes.io/created-by: ssbostan
+    spec:
+      containers:
+        - name: neptune
+          image: ssbostan/neptune:latest
+          ports:
+            - name: http
+              containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: neptune-neptune-config
+                optional: true
+            - secretRef:
+                name: neptune-neptune-secret
+          livenessProbe:
+            initialDelaySeconds: 1
+            periodSeconds: 3
+            exec:
+              command: ["kill", "-0", "1"]
+          readinessProbe:
+            initialDelaySeconds: 1
+            periodSeconds: 3
+            tcpSocket:
+              port: 8080
+---
+# Source: neptune/charts/mysql/templates/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: neptune-mysql
+  namespace: neptune
+  labels:
+    app.kubernetes.io/name: mysql
+    app.kubernetes.io/part-of: neptune
+    app.kubernetes.io/version: "8"
+    app.kubernetes.io/created-by: ssbostan
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mysql
+      app.kubernetes.io/part-of: neptune
+      app.kubernetes.io/version: "8"
+      app.kubernetes.io/created-by: ssbostan
+  serviceName: neptune-mysql
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mysql
+        app.kubernetes.io/part-of: neptune
+        app.kubernetes.io/version: "8"
+        app.kubernetes.io/created-by: ssbostan
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8
+          envFrom:
+            - secretRef:
+                name: neptune-mysql-secret
+          volumeMounts:
+            - name: neptune-mysql-data
+              mountPath: /var/lib/mysql
+          livenessProbe:
+            initialDelaySeconds: 1
+            periodSeconds: 3
+            exec:
+              command: ["ls", "/proc/1"]
+          readinessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            exec:
+              command:
+                - bash
+                - -c
+                - >-
+                  mysql -h localhost
+                  -u${MYSQL_USER} -p${MYSQL_PASSWORD}
+                  -e "select version();"
+  volumeClaimTemplates:
+    - metadata:
+        name: neptune-mysql-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 20Gi
+---
+# Source: neptune/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: neptune-neptune
+  namespace: neptune
+  labels:
+    app.kubernetes.io/name: neptune
+    app.kubernetes.io/part-of: neptune
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/created-by: ssbostan
+spec:
+  rules:
+    - host: neptune.20302040.xyz
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: neptune-neptune
+                port:
+                  name: http
+---
+# Source: neptune/charts/mysql/templates/tests/test.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: neptune-mysql-test
+  namespace: neptune
+  labels:
+    app.kubernetes.io/name: mysql
+    app.kubernetes.io/part-of: neptune
+    app.kubernetes.io/version: "8"
+    app.kubernetes.io/created-by: ssbostan
+  annotations:
+    helm.sh/hook: test
+spec:
+  restartPolicy: Never
+  containers:
+    - name: mysql
+      image: mysql:8
+      envFrom:
+        - secretRef:
+            name: neptune-mysql-secret
+      command:
+        - mysql
+        - -h
+        - neptune-mysql
+        - -u$(MYSQL_USER)
+        - -p$(MYSQL_PASSWORD)
+        - -e
+        - "select version();"
+---
+# Source: neptune/templates/tests/test.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: neptune-neptune-test
+  namespace: neptune
+  labels:
+    app.kubernetes.io/name: neptune
+    app.kubernetes.io/part-of: neptune
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/created-by: ssbostan
+  annotations:
+    helm.sh/hook: test
+spec:
+  restartPolicy: Never
+  containers:
+    - name: neptune
+      image: curlimages/curl:latest
+      args:
+        - http://neptune-neptune:80/api/v1/countries
