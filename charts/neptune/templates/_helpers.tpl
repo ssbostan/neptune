@@ -6,4 +6,5 @@
 app.kubernetes.io/name: {{ .Chart.Name }}
 app.kubernetes.io/part-of: {{ .Release.Name }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+app.kubernetes.io/created-by: ssbostan
 {{- end -}}
