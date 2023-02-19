@@ -1,2 +1,4 @@
 MySQL instance for {{ .Release.Name }} deployed successfully.
+{{- if not .Values.sealedSecrets.enabled -}}
 Connection URI: mysql+pymysql://{{ .Values.secret.mysqlUser }}:{{ .Values.secret.mysqlPassword }}@{{ include "name" . }}:3306/{{ .Values.secret.mysqlDatabase }}
+{{- end -}}
