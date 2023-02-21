@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: neptune
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: Neptune API Service
+  sourceRepos:
+    - https://github.com/ssbostan/neptune.git
+  destinations:
+    - name: in-cluster
+      server: https://kubernetes.default.svc
+      namespace: neptune-*
+    - name: in-cluster
+      server: https://kubernetes.default.svc
+      namespace: neptune
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+  namespaceResourceBlacklist:
+    - group: ""
+      kind: ResourceQuota
+    - group: ""
+      kind: LimitRange
