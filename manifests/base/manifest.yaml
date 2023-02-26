@@ -1,15 +1,4 @@
 ---
-# Source: neptune/templates/namespace.yaml
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: neptune
-  labels:
-    app.kubernetes.io/name: neptune
-    app.kubernetes.io/part-of: neptune
-    app.kubernetes.io/version: "1.0.0"
-    app.kubernetes.io/created-by: ssbostan
----
 # Source: neptune/templates/configmap.yaml
 apiVersion: v1
 kind: ConfigMap
@@ -19,7 +8,6 @@ metadata:
   labels:
     app.kubernetes.io/name: neptune
     app.kubernetes.io/part-of: neptune
-    app.kubernetes.io/version: "1.0.0"
     app.kubernetes.io/created-by: ssbostan
 data:
   NEPTUNE_API_ENV: production
@@ -35,7 +23,6 @@ metadata:
   labels:
     app.kubernetes.io/name: mysql
     app.kubernetes.io/part-of: neptune
-    app.kubernetes.io/version: "8"
     app.kubernetes.io/created-by: ssbostan
 spec:
   type: ClusterIP
@@ -43,7 +30,6 @@ spec:
   selector:
     app.kubernetes.io/name: mysql
     app.kubernetes.io/part-of: neptune
-    app.kubernetes.io/version: "8"
     app.kubernetes.io/created-by: ssbostan
   ports:
     - name: mysql
@@ -59,14 +45,12 @@ metadata:
   labels:
     app.kubernetes.io/name: neptune
     app.kubernetes.io/part-of: neptune
-    app.kubernetes.io/version: "1.0.0"
     app.kubernetes.io/created-by: ssbostan
 spec:
   type: ClusterIP
   selector:
     app.kubernetes.io/name: neptune
     app.kubernetes.io/part-of: neptune
-    app.kubernetes.io/version: "1.0.0"
     app.kubernetes.io/created-by: ssbostan
   ports:
     - name: http
@@ -82,7 +66,6 @@ metadata:
   labels:
     app.kubernetes.io/name: neptune
     app.kubernetes.io/part-of: neptune
-    app.kubernetes.io/version: "1.0.0"
     app.kubernetes.io/created-by: ssbostan
 spec:
   replicas: 3
@@ -90,14 +73,12 @@ spec:
     matchLabels:
       app.kubernetes.io/name: neptune
       app.kubernetes.io/part-of: neptune
-      app.kubernetes.io/version: "1.0.0"
       app.kubernetes.io/created-by: ssbostan
   template:
     metadata:
       labels:
         app.kubernetes.io/name: neptune
         app.kubernetes.io/part-of: neptune
-        app.kubernetes.io/version: "1.0.0"
         app.kubernetes.io/created-by: ssbostan
     spec:
       containers:
@@ -132,7 +113,6 @@ metadata:
   labels:
     app.kubernetes.io/name: mysql
     app.kubernetes.io/part-of: neptune
-    app.kubernetes.io/version: "8"
     app.kubernetes.io/created-by: ssbostan
 spec:
   replicas: 1
@@ -140,7 +120,6 @@ spec:
     matchLabels:
       app.kubernetes.io/name: mysql
       app.kubernetes.io/part-of: neptune
-      app.kubernetes.io/version: "8"
       app.kubernetes.io/created-by: ssbostan
   serviceName: neptune-mysql
   template:
@@ -148,7 +127,6 @@ spec:
       labels:
         app.kubernetes.io/name: mysql
         app.kubernetes.io/part-of: neptune
-        app.kubernetes.io/version: "8"
         app.kubernetes.io/created-by: ssbostan
     spec:
       containers:
@@ -196,7 +174,6 @@ metadata:
   labels:
     app.kubernetes.io/name: neptune
     app.kubernetes.io/part-of: neptune
-    app.kubernetes.io/version: "1.0.0"
     app.kubernetes.io/created-by: ssbostan
 spec:
   rules:
@@ -220,7 +197,6 @@ metadata:
   labels:
     app.kubernetes.io/name: mysql
     app.kubernetes.io/part-of: neptune
-    app.kubernetes.io/version: "8"
     app.kubernetes.io/created-by: ssbostan
   annotations:
     helm.sh/hook: test
@@ -250,7 +226,6 @@ metadata:
   labels:
     app.kubernetes.io/name: neptune
     app.kubernetes.io/part-of: neptune
-    app.kubernetes.io/version: "1.0.0"
     app.kubernetes.io/created-by: ssbostan
   annotations:
     helm.sh/hook: test
